@@ -1,3 +1,5 @@
 # This file is similar to the mkdocs.nav configuration option, but it will be mounted under mkdocs.nav.Firmware only!
 
 - 'Test': 'test.md'
+- 'Funny?':
+  - 'TESTY': 'test2.md'
