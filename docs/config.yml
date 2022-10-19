@@ -1,5 +1,6 @@
 # This file is similar to the mkdocs.nav configuration option, but it will be mounted under mkdocs.nav.Firmware only!
 
+- 'TODO_TITLE_': 'firmware.md'
 - 'Test': 'test.md'
 - 'Funny?':
   - 'TESTY': 'test2.md'
