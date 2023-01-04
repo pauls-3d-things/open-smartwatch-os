@@ -73,7 +73,7 @@ void OswUI::loop(OswAppSwitcher& mainAppSwitcher, uint16_t& mainAppIndex) {
         return;
 
     // Lock UI for drawing
-    std::lock_guard<std::mutex> guard(*this->drawLock);
+    std::lock_guard<std::mutex> guard(*this->drawLock); // Make sure to not modify the notifications vector during drawing
 
     // BG
     if(OswHal::getInstance()->displayBufferEnabled())
@@ -103,6 +103,23 @@ void OswUI::loop(OswAppSwitcher& mainAppSwitcher, uint16_t& mainAppIndex) {
         this->mProgressBar->draw();
     }
 
+    {
+        std::lock_guard<std::mutex> notiyGuard(this->mNotificationsLock);
+        // Drop all timed out notifications
+        for(auto it = this->mNotifications.begin(); it != this->mNotifications.end();) {
+            if(it->endTime < millis())
+                it = this->mNotifications.erase(it);
+            else
+                ++it;
+        }
+        // Draw all notifications
+        unsigned int y = DISP_H - OswUINotification::sDrawHeight;
+        for(auto& notification : this->mNotifications) {
+            notification.draw(y);
+            y -= OswUINotification::sDrawHeight;
+        }
+    }
+
     // Only draw overlays if enabled
     if (OswConfigAllKeys::settingDisplayOverlays.get())
         // Only draw on first face if enabled, or on all others
@@ -122,6 +139,22 @@ void OswUI::startProgress(const char* text) {
     if(!this->getProgressActive())
         this->mProgressBar = new OswUI::OswUIProgress((short) DISP_W * 0.2, (short) DISP_H * 0.6, (short) DISP_W * 0.6);
     this->mProgressText = text;
+}
+
+size_t OswUI::showNotification(const OswUINotification& notification) {
+    std::lock_guard<std::mutex> guard(this->mNotificationsLock); // Make sure to not modify the notifications vector during drawing
+    this->mNotifications.push_back(notification);
+    return notification.id;
+}
+
+void OswUI::killNotification(const size_t& id) {
+    std::lock_guard<std::mutex> guard(this->mNotificationsLock); // Make sure to not modify the notifications vector during drawing
+    for(auto it = this->mNotifications.begin(); it != this->mNotifications.end(); ++it) {
+        if(it->id == id) {
+            this->mNotifications.erase(it);
+            return;
+        }
+    }
 }
 
 OswUI::OswUIProgress* OswUI::getProgressBar() {
@@ -213,4 +246,21 @@ void OswUI::OswUIProgress::draw() {
     else
         // Use rectangle drawing to prevent the library to glitch out when the bar is too thin
         OswHal::getInstance()->gfx()->fillFrame(fgStart, this->y, fgBarWidth, barHeight, this->fgColor);
+}
+
+OswUI::OswUINotification::OswUINotification(const String& text): endTime(millis() + text.length() * 300), id(random(0, 100000)), text(text) {
+
+}
+
+void OswUI::OswUINotification::draw(unsigned int y) {
+    // TODO
+    // * handle too long texts by adding a scroll animation?
+    // * newlines may change a notifications height, so the y position should be calculated based on the current height of the notification -> return that instead of void
+    Graphics2DPrint* gfx = OswHal::getInstance()->gfx();
+    gfx->fillFrame(0, y, DISP_W, this->sDrawHeight, OswUI::getInstance()->getBackgroundColor());
+    gfx->drawHLine(0, y, DISP_W, OswUI::getInstance()->getInfoColor());
+    gfx->resetText();
+    gfx->setTextCenterAligned();
+    gfx->setTextCursor(DISP_W * 0.5, y + (this->sDrawHeight * 0.5) + 8 / 2); // To center the text, it is assumed that one char has a height of 8 pixels
+    gfx->print(this->text);
 }
