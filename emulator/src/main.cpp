@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
         returnval = utest_main(argc, argv);
     } else if (a.exist(argUiTests)) {
         // Run the emulator together with the testing engine
-        returnval = UiTests_main();
+        returnval = UiTests_main(argc, argv);
     } else {
         // Create and run the emulator
         std::unique_ptr<OswEmulator> oswEmu = std::make_unique<OswEmulator>(a.exist("headless"));
