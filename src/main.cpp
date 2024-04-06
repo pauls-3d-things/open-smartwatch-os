@@ -83,6 +83,7 @@
 #ifdef OSW_FEATURE_WEATHER
 #include "./apps/_experiments/OswAppWeather.h"
 #endif
+#include "./apps/_experiments/OswAppBLE.h"
 
 // get global variables (make sure to NOT include any headers after the "using" statements!)
 #include "globals.h"
@@ -212,6 +213,7 @@ void loop() {
         main_mainDrawer.registerApp(LANG_EXAMPLES, new OswAppV2Compat("osw.example.v1", LANG_EXAMPLE " " LANG_APP " v1", exampleV1));
         main_mainDrawer.registerAppLazy<OswAppTutorial>(LANG_EXAMPLES); // also add the tutorial to the examples list
 #endif
+        main_mainDrawer.registerAppLazy<OswAppBLE>("EXPERIMENTS");
 
         // Fitness App
 #ifdef OSW_FEATURE_STATS_STEPS
