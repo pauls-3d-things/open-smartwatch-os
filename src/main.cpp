@@ -62,6 +62,7 @@
 #endif
 #include "./apps/watchfaces/OswAppWatchface.h"
 #include "./apps/watchfaces/OswAppWatchfaceDigital.h"
+#include "./apps/watchfaces/OswAppWatchfaceCountdown.h"
 #include "./apps/watchfaces/OswAppWatchfaceMix.h"
 #include "./apps/watchfaces/OswAppWatchfaceDual.h"
 #include "./apps/watchfaces/OswAppWatchfaceFitness.h"
@@ -114,6 +115,7 @@ void setup() {
 
     // TODO port all v1 watchfaces to v2, to allow for lazy loading
     main_mainDrawer.registerAppLazy<OswAppWatchface>(LANG_WATCHFACES);
+    main_mainDrawer.registerAppLazy<OswAppWatchfaceCountdown>(LANG_WATCHFACES);
     main_mainDrawer.registerAppLazy<OswAppWatchfaceDigital>(LANG_WATCHFACES);
     main_mainDrawer.registerAppLazy<OswAppWatchfaceMix>(LANG_WATCHFACES);
     main_mainDrawer.registerAppLazy<OswAppWatchfaceDual>(LANG_WATCHFACES);

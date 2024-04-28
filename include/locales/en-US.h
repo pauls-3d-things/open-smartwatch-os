@@ -79,6 +79,9 @@
 #ifndef LANG_DIGITAL
 #define LANG_DIGITAL "Digital"
 #endif
+#ifndef LANG_COUNTDOWN
+#define LANG_COUNTDOWN "Countdown"
+#endif
 #ifndef LANG_WATCHFACES
 #define LANG_WATCHFACES "Watchfaces"
 #endif
